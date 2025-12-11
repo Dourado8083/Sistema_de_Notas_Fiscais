@@ -1,0 +1,71 @@
+<div class="container">
+    <div class="card form-card">
+        <h2 class="card-header-title">
+            {{ editandoProduto ? 'Editar Produto (Código: ' + produtoEmEdicao?.code + ')' : 'Adicionar Novo Produto' }}
+        </h2>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">Nome *</label>
+                <input [(ngModel)]="novoProduto.name" placeholder="Nome do produto" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Quantidade</label>
+                <input [(ngModel)]="novoProduto.quantity" type="number" placeholder="Quantidade" class="form-input">
+            </div>
+        </div>
+
+        <div class="actions form-actions">
+            <button (click)="salvar()" class="btn btn-primary">
+                {{ editandoProduto ? 'Salvar Alterações' : 'Adicionar Produto' }}
+            </button>
+
+            <button *ngIf="editandoProduto" (click)="cancelarEdicao()" class="btn btn-secondary">
+                Cancelar Edição
+            </button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Código</th>
+                    <th>Nome</th>
+                    <th>Quantidade</th>
+                    <th>Data Criação</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of produtos">
+                    <td>{{ p.id }}</td>
+                    <td>{{ p.code }}</td>
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.quantity }}</td>
+                    <td>{{ formatarData(p.createdAt!) }}</td>
+                    <td class="actions">
+                        <button (click)="editar(p)" class="btn btn-secondary btn-small">
+                            Editar
+                        </button>
+                        <button (click)="deletar(p.code!)" class="btn btn-danger btn-small">
+                           <img class="img" src="../../../assets/lixeira-de-reciclagem.png" alt="Deletar"/>
+                        </button>
+                    </td>
+                </tr>
+
+                <tr *ngIf="loading">
+                    <td colspan="6" class="empty-message">
+                        Carregando produtos...
+                    </td>
+                </tr>
+                <tr *ngIf="!loading && produtos.length === 0">
+                    <td colspan="6" class="empty-message">
+                        Nenhum produto cadastrado
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

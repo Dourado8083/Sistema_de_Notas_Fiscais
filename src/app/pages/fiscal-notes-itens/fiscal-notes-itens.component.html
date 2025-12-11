@@ -1,0 +1,101 @@
+<div class="items-container">
+  
+  <div class="items-header">
+    <h3>Itens da Nota</h3>
+    <button 
+      *ngIf="!isReadOnly" 
+      class="btn btn-primary btn-small" 
+      (click)="toggleAddForm()"
+      [disabled]="loading">
+      {{ showAddForm ? 'Cancelar Adição' : '+ Adicionar Item' }}
+    </button>
+  </div>
+
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <div *ngIf="showAddForm && !isReadOnly" class="add-form">
+    <div class="form-group">
+      <label>Código do Produto:</label>
+      <input 
+        type="text" 
+        [(ngModel)]="newItem.productCode" 
+        placeholder="Ex: PROD001"
+        class="form-control">
+    </div>
+    <div class="form-group">
+      <label>Quantidade:</label>
+      <input 
+        type="number" 
+        [(ngModel)]="newItem.quantity" 
+        placeholder="0.00"
+        step="0.01"
+        min="0"
+        class="form-control">
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-success btn-small" (click)="addItem()" [disabled]="loading">
+        Salvar Item
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading && items.length === 0" class="loading">Carregando itens...</div>
+
+  <div class="table-container" *ngIf="items.length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Código do Produto</th>
+          <th>Quantidade</th>
+          <th *ngIf="!isReadOnly">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of items">
+          <td>{{ item.id }}</td>
+          <td>
+            <input 
+              *ngIf="isEditing(item)" 
+              type="text" 
+              [(ngModel)]="editingItem!.productCode"
+              class="form-control-inline">
+            <span *ngIf="!isEditing(item)">{{ item.productCode }}</span>
+          </td>
+          <td>
+            <input 
+              *ngIf="isEditing(item)" 
+              type="number" 
+              [(ngModel)]="editingItem!.quantity"
+              step="0.01"
+              min="0"
+              class="form-control-inline">
+            <span *ngIf="!isEditing(item)">{{ item.quantity }}</span>
+          </td>
+          <td *ngIf="!isReadOnly" class="actions">
+            <div *ngIf="!isEditing(item)">
+              <button class="btn btn-secondary btn-small" (click)="startEdit(item)">
+                Editar
+              </button>
+              <button class="btn btn-danger btn-small" (click)="deleteItem(item)">
+                Excluir
+              </button>
+            </div>
+            <div *ngIf="isEditing(item)">
+              <button class="btn btn-success btn-small" (click)="saveEdit()">
+                Salvar
+              </button>
+              <button class="btn btn-secondary btn-small" (click)="cancelEdit()">
+                Cancelar
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="items.length === 0 && !loading" class="empty-message">
+    Nenhum item adicionado ainda
+  </div>
+</div>

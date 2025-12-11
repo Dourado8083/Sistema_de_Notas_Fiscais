@@ -1,0 +1,88 @@
+
+<div class="container">
+  <div class="header">
+    <h1>Notas Fiscais</h1>
+    <button class="btn btn-primary" (click)="createNewNote()" [disabled]="loading">
+      Nota Fiscal
+    </button>
+  </div>
+
+  <div class="filters">
+    <label>
+      Filtrar por status:
+      <select [(ngModel)]="filterStatus" (change)="onFilterChange()">
+        <option value="all">Todas</option>
+        <option value="Aberta">Aberta</option>
+        <option value="Fechada">Fechada</option>
+      </select>
+    </label>
+  </div>
+
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+  <div *ngIf="loading" class="loading">Carregando...</div>
+
+  <div class="table-container" *ngIf="!loading">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Número Sequencial</th>
+          <th>Status</th>
+          <th>Data Emissão</th>
+          <th>Data Fechamento</th>
+          <th>Itens</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let note of filteredNotes">
+          <td>{{ note.id }}</td>
+          <td>{{ note.numeroSequencial }}</td>
+          <td>
+            <span [ngClass]="getStatusClass(note.status)">
+              {{ note.status }}
+            </span>
+          </td>
+          <td>{{ formatDate(note.dataEmissao) }}</td>
+          <td>{{ formatDate(note.dataFechamento) }}</td>
+          <td>
+            <button class="btn btn-small btn-secondary" (click)="viewItems(note)">
+              Ver Itens ({{ note.items?.length || 0 }})
+            </button>
+          </td>
+          <td class="actions">
+            <button 
+              *ngIf="note.status === 'Aberta'" 
+              class="btn btn-small btn-success" 
+              (click)="closeNote(note)">
+              Fechar
+            </button>
+            <button class="btn btn-small btn-danger" (click)="deleteNote(note)">
+             <img class="img" src="../../../assets/lixeira-de-reciclagem.png" alt="Deletar"/>
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="filteredNotes.length === 0">
+          <td colspan="7" class="empty-message">Nenhuma nota fiscal encontrada</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal de Itens -->
+  <div class="modal" *ngIf="showItemsModal" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Itens da Nota Fiscal #{{ selectedNote?.numeroSequencial }}</h2>
+        <button class="btn-close" (click)="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <app-fiscal-notes-itens>
+          *ngIf="selectedNote?.id" 
+        [fiscalNoteId]="selectedNote!.id!"
+        [isReadOnly]="selectedNote!.status === 'Fechada'">
+        </app-fiscal-notes-itens>
+      </div>
+    </div>
+  </div>
+</div>
